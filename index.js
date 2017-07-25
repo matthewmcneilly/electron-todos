@@ -8,6 +8,8 @@ let addWindow;
 app.on('ready', () => {
   mainWindow = new BrowserWindow({});
   mainWindow.loadURL(`file://${__dirname}/main.html`);
+  // When main window closed quit the entire app and all of its child processes
+  mainWindow.on('closed', () => app.quit());
 
   // Build a menu used the template created below
   const mainMenu = Menu.buildFromTemplate(menuTemplate);
@@ -22,6 +24,7 @@ function createAddWindow() {
     height: 200,
     title: 'Add New Todo'
   });
+  addWindow.loadURL(`file://${__dirname}/add.html`);
 }
 
 // Menu template
