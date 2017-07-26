@@ -1,6 +1,6 @@
 const electron = require('electron');
 
-const { app, BrowserWindow, Menu } = electron;
+const { app, BrowserWindow, Menu, ipcMain } = electron;
 
 let mainWindow;
 let addWindow;
@@ -25,7 +25,16 @@ function createAddWindow() {
     title: 'Add New Todo'
   });
   addWindow.loadURL(`file://${__dirname}/add.html`);
+  // allows the BrowserWindow to be garbage collected by JavaScript
+  // so BrowserWindow is reassigned by this functions runs as BrowserWindow-v2
+  addWindow.on('closed', () => addWindow = null);
 }
+
+ipcMain.on('todo:add', (event, todo) => {
+  mainWindow.webContents.send('todo:add', todo);
+  addWindow.close();
+  // addWindow = null;
+});
 
 // Menu template
 const menuTemplate = [
