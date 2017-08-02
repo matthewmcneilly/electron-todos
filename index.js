@@ -2,6 +2,7 @@ const electron = require('electron');
 
 const { app, BrowserWindow, Menu, ipcMain } = electron;
 
+// Limits the scope of the variable
 let mainWindow;
 let addWindow;
 
@@ -30,8 +31,11 @@ function createAddWindow() {
   addWindow.on('closed', () => addWindow = null);
 }
 
+// When recieves instruction of todo:add from add.html
+// Send it onto mainWindow
 ipcMain.on('todo:add', (event, todo) => {
   mainWindow.webContents.send('todo:add', todo);
+  // then close addWindow 
   addWindow.close();
   // addWindow = null;
 });
@@ -45,6 +49,12 @@ const menuTemplate = [
       {
         label: 'New Todo',
         click() { createAddWindow() }
+      },
+      {
+        label: 'Clear Todos',
+        click() {
+          mainWindow.webContents.send('todos:clear');
+        }
       },
       {
         label: 'Quit',
@@ -78,6 +88,7 @@ if (process.env.NODE_ENV !== 'production') {
   menuTemplate.push({
     label: 'Developer',
     submenu: [
+      { role: 'reload' },
       {
         label: 'Toggle Developer Tools',
         accelerator: process.platform === 'darwin' ? 'Command+Alt+I' : 'Ctrl+Shift+I',
